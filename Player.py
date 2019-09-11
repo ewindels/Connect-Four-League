@@ -4,4 +4,4 @@ class Player:
         self.strategy = strategy
 
     def play(self, game):
-        return self.strategy.play(game)
+        return self.strategy.play(game, self.color)

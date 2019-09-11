@@ -6,7 +6,7 @@ class Strategy:
     def __init__(self, strategy):
         self.strategy = strategy
 
-    def play(self, game):
+    def play(self, game, color):
         if self.strategy == 'random':
             available = [col for col in range(7) if game.board.heights[col] >= 0]
             return choice(available)
@@ -87,5 +87,20 @@ class Strategy:
                 scores[col] = score
             max_score = max(scores)
             return choice([col for col in range(7) if scores[col] == max_score])
+
+        elif self.strategy == 'min_max':
+            possibilities = [-1e9 for _ in range(7)]
+            for col in range(7):
+                if game.board.heights[col] < 0:
+                    continue
+                game.board.update(col, color)
+                victory = game.check_victory(game.board.heights[col], col)
+                if victory:
+                    possibilities[col] = 1e9
+                else:
+                    possibilities[col] = 0
+                game.board.cancel()
+            return argmax(possibilities)
+
         else:
             print("Strategy doesn't exist !")

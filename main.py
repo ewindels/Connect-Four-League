@@ -2,8 +2,8 @@ from Game import Game
 from Player import Player
 from Strategies import Strategy
 
-player1 = Player('X', Strategy('groups_same'))
-player2 = Player('O', Strategy('groups_oppo'))
+player1 = Player('X', Strategy('min_max'))
+player2 = Player('O', Strategy('random'))
 game = Game(player1, player2)
 
 
