@@ -1,6 +1,6 @@
 from random import choice
 from numpy import argmax
-
+from sys import maxsize
 
 class Strategy:
     def __init__(self, strategy):
@@ -115,14 +115,14 @@ class MinMaxStrategy:
                 node.value = 0
                 return 0
             if maximizing_player:
-                value = -1e9
+                value = -maxsize
                 node.children = [MinMaxNode() if game_tmp.board.heights[col] >= 0 else None for col in range(7)]
                 for col, child in enumerate(node.children):
                     if child:
                         game_tmp.board.update(col, color)
                         if game_tmp.board.check_victory:
-                            child.value = 1e9
-                            value = 1e9
+                            child.value = maxsize
+                            value = maxsize
                         elif game_tmp.board.is_full:
                             value = max(0, value)
                             child.value = 0
@@ -138,8 +138,8 @@ class MinMaxStrategy:
                     if child:
                         game_tmp.board.update(col, color)
                         if game_tmp.board.check_victory:
-                            value = -1e9
-                            child.value = -1e9
+                            value = -maxsize
+                            child.value = -maxsize
                         elif game_tmp.board.is_full:
                             value = min(0, value)
                             child.value = 0
@@ -151,7 +151,7 @@ class MinMaxStrategy:
 
         min_max_tree = MinMaxTree()
         minimax(game, min_max_tree.origin, self.depth)
-        values = [node.value if node is not None else -1e9 for node in min_max_tree.origin.children]
-        max_val = max(values)
+        values = [node.value if node is not None else None for node in min_max_tree.origin.children]
+        max_val = max([node.value for node in min_max_tree.origin.children if node])
         return choice([col for col, val in enumerate(values) if val == max_val])
 
