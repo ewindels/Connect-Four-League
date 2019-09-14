@@ -18,15 +18,18 @@ class Game:
         for row in self.board.grid[:-1]:
             print('║ ' + ' │ '.join([color if color else ' ' for color in row]) + ' ║')
             print('╟' + '───┼' * 6 + '───╢')
-        print('║ ' + ' │ '.join([color if color else ' ' for color in self.board.grid[-1]]) + ' ║')
+        print('║ {0} ║'.format(' │ '.join([color if color else ' ' for color in self.board.grid[-1]])))
         print('╚' + '═══╧' * 6 + '═══╝')
+
+    def switch_players(self):
+        self.players.reverse()
 
     def play_turn(self):
         player = self.players[self.player_turn_n]
         player_choice = player.play(self)
         self.board.update(player_choice)
         self.turn += 1
-        self.player_turn_n = (self.player_turn_n + 1)%2
+        self.player_turn_n = (self.player_turn_n + 1) % 2
 
     def full_game(self, log=False):
 
@@ -35,8 +38,8 @@ class Game:
                 self.print_turn()
                 self.print_board()
             self.play_turn()
-            if self.board.check_victory:
-                self.winner = (self.player_turn_n + 1)%2
+            if self.turn >= 7 and self.board.check_victory:
+                self.winner = (self.player_turn_n + 1) % 2
                 if log:
                     self.print_board()
                     print('Player {} won !'.format(self.winner))
