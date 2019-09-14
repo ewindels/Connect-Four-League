@@ -2,6 +2,7 @@ from random import choice
 from numpy import argmax
 from sys import maxsize
 
+
 class Strategy:
     def __init__(self, strategy):
         self.strategy = strategy
@@ -22,7 +23,7 @@ class Strategy:
             return choice(available)
 
         elif self.strategy == 'groups_same':
-            color = game.players[game.player_turn_n].color
+            color = game.board.color
             scores = [0 for _ in range(7)]
             for col in range(7):
                 score = 0
@@ -55,7 +56,7 @@ class Strategy:
             return argmax(scores)
 
         elif self.strategy == 'groups_oppo':
-            color = game.players[(game.player_turn_n + 1) % 2].color
+            color = game.board.color
             scores = [0 for _ in range(7)]
             for col in range(7):
                 score = 0
@@ -110,7 +111,7 @@ class MinMaxStrategy:
     def play(self, game):
 
         def minimax(game_tmp, node, depth, maximizing_player=True):
-            color = game_tmp.players[(game_tmp.player_turn_n + maximizing_player + 1) % 2].color
+            color = game_tmp.board.color
             if depth == 0:
                 node.value = 0
                 return 0
@@ -119,7 +120,7 @@ class MinMaxStrategy:
                 node.children = [MinMaxNode() if game_tmp.board.heights[col] >= 0 else None for col in range(7)]
                 for col, child in enumerate(node.children):
                     if child:
-                        game_tmp.board.update(col, color)
+                        game_tmp.board.update(col)
                         if game_tmp.board.check_victory:
                             child.value = maxsize
                             value = maxsize
@@ -132,11 +133,11 @@ class MinMaxStrategy:
                 node.value = value
                 return value
             else:
-                value = 1e9
+                value = maxsize
                 node.children = [MinMaxNode() if game_tmp.board.heights[col] >= 0 else None for col in range(7)]
                 for col, child in enumerate(node.children):
                     if child:
-                        game_tmp.board.update(col, color)
+                        game_tmp.board.update(col)
                         if game_tmp.board.check_victory:
                             value = -maxsize
                             child.value = -maxsize

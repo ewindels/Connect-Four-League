@@ -1,6 +1,5 @@
 class Player:
-    def __init__(self, color, strategy):
-        self.color = color
+    def __init__(self, strategy):
         self.strategy = strategy
 
     def play(self, game):

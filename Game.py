@@ -11,7 +11,7 @@ class Game:
         self.draw = False
 
     def print_turn(self):
-        print('Turn {} - Player {} ({})'.format(self.turn, self.player_turn_n, self.players[self.player_turn_n].color))
+        print('Turn {} - Player {} ({})'.format(self.turn, self.player_turn_n, self.board.color))
 
     def print_board(self):
         print('╔' + '═══╤' * 6 + '═══╗')
@@ -24,7 +24,7 @@ class Game:
     def play_turn(self):
         player = self.players[self.player_turn_n]
         player_choice = player.play(self)
-        self.board.update(player_choice, player.color)
+        self.board.update(player_choice)
         self.turn += 1
         self.player_turn_n = (self.player_turn_n + 1)%2
 

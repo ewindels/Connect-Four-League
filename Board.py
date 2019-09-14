@@ -3,10 +3,11 @@ class Board:
         self.grid = [[None for _ in range(7)] for _ in range(7)]
         self.heights = [6 for _ in range(7)]
         self.move_history = list()
+        self.colors = ['X', 'O']
 
-    def update(self, column, color):
+    def update(self, column):
         assert(self.heights[column] >= 0)
-        self.grid[self.heights[column]][column] = color
+        self.grid[self.heights[column]][column] = self.color
         self.heights[column] -= 1
         self.move_history.append(column)
 
@@ -14,6 +15,10 @@ class Board:
         last_move = self.move_history.pop()
         self.grid[self.heights[last_move] + 1][last_move] = None
         self.heights[last_move] += 1
+
+    @property
+    def color(self):
+        return self.colors[len(self.move_history) % 2]
 
     @property
     def is_full(self):
