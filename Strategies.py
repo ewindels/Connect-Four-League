@@ -6,7 +6,7 @@ class Strategy:
     def __init__(self, strategy):
         self.strategy = strategy
 
-    def play(self, game, color):
+    def play(self, game):
         if self.strategy == 'random':
             available = [col for col in range(7) if game.board.heights[col] >= 0]
             return choice(available)
@@ -17,7 +17,7 @@ class Strategy:
             return choice(available)
 
         elif self.strategy == 'fullest':
-            fullest = min([height for height in  game.board.heights if height >= 0])
+            fullest = min([height for height in game.board.heights if height >= 0])
             available = [col for col in range(7) if game.board.heights[col] == fullest]
             return choice(available)
 
@@ -30,7 +30,7 @@ class Strategy:
                 if row < 0:
                     continue
                 for dist in range(1, 4):
-                    weight = 1/(2**(dist-1))
+                    weight = 1 / (2 ** (dist - 1))
                     # up
                     if row - dist >= 0:
                         for c in range(max(0, col - dist), min(7, col + dist + 1)):
@@ -55,7 +55,7 @@ class Strategy:
             return argmax(scores)
 
         elif self.strategy == 'groups_oppo':
-            color = game.players[(game.player_turn_n + 1)%2].color
+            color = game.players[(game.player_turn_n + 1) % 2].color
             scores = [0 for _ in range(7)]
             for col in range(7):
                 score = 0
@@ -63,7 +63,7 @@ class Strategy:
                 if row < 0:
                     continue
                 for dist in range(1, 4):
-                    weight = 1/(2**(dist-1))
+                    weight = 1 / (2 ** (dist - 1))
                     # up
                     if row - dist >= 0:
                         for c in range(max(0, col - dist), min(7, col + dist + 1)):
@@ -88,19 +88,70 @@ class Strategy:
             max_score = max(scores)
             return choice([col for col in range(7) if scores[col] == max_score])
 
-        elif self.strategy == 'min_max':
-            possibilities = [-1e9 for _ in range(7)]
-            for col in range(7):
-                if game.board.heights[col] < 0:
-                    continue
-                game.board.update(col, color)
-                victory = game.check_victory(game.board.heights[col], col)
-                if victory:
-                    possibilities[col] = 1e9
-                else:
-                    possibilities[col] = 0
-                game.board.cancel()
-            return argmax(possibilities)
-
         else:
             print("Strategy doesn't exist !")
+
+
+class MinMaxNode:
+    def __init__(self):
+        self.value = None
+        self.children = None
+
+
+class MinMaxTree:
+    def __init__(self):
+        self.origin = MinMaxNode()
+
+
+class MinMaxStrategy:
+    def __init__(self, depth):
+        self.depth = depth
+
+    def play(self, game):
+
+        def minimax(game_tmp, node, depth, maximizing_player=True):
+            color = game_tmp.players[(game_tmp.player_turn_n + maximizing_player + 1) % 2].color
+            if depth == 0:
+                node.value = 0
+                return 0
+            if maximizing_player:
+                value = -1e9
+                node.children = [MinMaxNode() if game_tmp.board.heights[col] >= 0 else None for col in range(7)]
+                for col, child in enumerate(node.children):
+                    if child:
+                        game_tmp.board.update(col, color)
+                        if game_tmp.board.check_victory:
+                            child.value = 1e9
+                            value = 1e9
+                        elif game_tmp.board.is_full:
+                            value = max(0, value)
+                            child.value = 0
+                        else:
+                            value = max(value, minimax(game_tmp, child, depth - 1, False))
+                        game_tmp.board.cancel()
+                node.value = value
+                return value
+            else:
+                value = 1e9
+                node.children = [MinMaxNode() if game_tmp.board.heights[col] >= 0 else None for col in range(7)]
+                for col, child in enumerate(node.children):
+                    if child:
+                        game_tmp.board.update(col, color)
+                        if game_tmp.board.check_victory:
+                            value = -1e9
+                            child.value = -1e9
+                        elif game_tmp.board.is_full:
+                            value = min(0, value)
+                            child.value = 0
+                        else:
+                            value = min(value, minimax(game_tmp, child, depth - 1, True))
+                        game_tmp.board.cancel()
+                node.value = value
+                return value
+
+        min_max_tree = MinMaxTree()
+        minimax(game, min_max_tree.origin, self.depth)
+        values = [node.value if node is not None else -1e9 for node in min_max_tree.origin.children]
+        max_val = max(values)
+        return choice([col for col, val in enumerate(values) if val == max_val])
+
