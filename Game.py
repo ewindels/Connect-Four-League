@@ -5,13 +5,16 @@ class Game:
     def __init__(self, player1, player2):
         self.board = Board()
         self.players = [player1, player2]
-        self.player_turn_n = 0
-        self.turn = 1
+        self.turn = 0
         self.winner = None
         self.draw = False
 
+    @property
+    def player_turn(self):
+        return self.players[self.turn % 2]
+
     def print_turn(self):
-        print('Turn {} - Player {} ({})'.format(self.turn, self.player_turn_n, self.board.color))
+        print('Turn {} - Player {} ({})'.format(self.turn, self.turn % 2, self.board.color))
 
     def print_board(self):
         print('╔' + '═══╤' * 6 + '═══╗')
@@ -25,11 +28,9 @@ class Game:
         self.players.reverse()
 
     def play_turn(self):
-        player = self.players[self.player_turn_n]
-        player_choice = player.play(self)
+        player_choice = self.player_turn.play(self)
         self.board.update(player_choice)
         self.turn += 1
-        self.player_turn_n = (self.player_turn_n + 1) % 2
 
     def full_game(self, log=False):
 
@@ -39,7 +40,7 @@ class Game:
                 self.print_board()
             self.play_turn()
             if self.turn >= 7 and self.board.check_victory:
-                self.winner = (self.player_turn_n + 1) % 2
+                self.winner = (self.turn + 1) % 2
                 if log:
                     self.print_board()
                     print('Player {} won !'.format(self.winner))
@@ -51,7 +52,6 @@ class Game:
 
     def reset(self):
         self.board = Board()
-        self.player_turn_n = 0
-        self.turn = 1
+        self.turn = 0
         self.winner = None
         self.draw = False
