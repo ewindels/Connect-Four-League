@@ -12,4 +12,7 @@ for _ in range(games):
     game.reset()
     game.switch_players()
 
+player1.print_score()
+player2.print_score()
+
 print('Player 1:', player1.score, '/ Player 2:', player2.score)
