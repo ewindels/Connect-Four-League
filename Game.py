@@ -7,6 +7,7 @@ class Game:
         self.players = [player1, player2]
         self.turn = 0
         self.winner = None
+        self.loser = None
         self.draw = False
 
     @property
@@ -40,12 +41,18 @@ class Game:
                 self.print_board()
             self.play_turn()
             if self.turn >= 7 and self.board.check_victory:
-                self.winner = (self.turn + 1) % 2
+                self.loser = self.player_turn
+                self.turn -= 1
+                self.winner = self.player_turn
+                self.winner.victories += 1
+                self.loser.defeats += 1
                 if log:
                     self.print_board()
-                    print('Player {} won !'.format(self.winner))
+                    print('Player {} won !'.format(self.turn % 2))
             if self.board.is_full:
                 self.draw = True
+                self.players[0].draws += 1
+                self.players[1].draws += 1
                 if log:
                     print('Draw')
         return self.winner
@@ -54,4 +61,5 @@ class Game:
         self.board = Board()
         self.turn = 0
         self.winner = None
+        self.loser = None
         self.draw = False
