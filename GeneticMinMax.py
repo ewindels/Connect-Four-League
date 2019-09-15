@@ -89,9 +89,9 @@ class Population:
         self.best_players[-1].reset_score()
         self.best_players[-2].reset_score()
 
-
+'''
 pop = Population()
-for i in range(5):
+for i in range(3):
     print('\nGeneration', i)
     pop.match()
     pop.evolve()
@@ -104,6 +104,7 @@ for _ in range(2):
     game.full_game(log=True)
     game.reset()
     game.switch_players()
+'''
 
 
 

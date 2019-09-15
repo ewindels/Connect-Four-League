@@ -43,10 +43,6 @@ class Board:
         # vertical
         total = 1
         i = 1
-        while last_row - i >= 0 and self.grid[last_row - i][last_col] == color:
-            total += 1
-            i += 1
-        i = 1
         while last_row + i < 6 and self.grid[last_row + i][last_col] == color:
             total += 1
             i += 1

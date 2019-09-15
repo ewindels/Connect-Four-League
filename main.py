@@ -4,13 +4,13 @@ from Strategies import *
 from GeneticMinMax import *
 
 
-player1 = Player(MinMaxLvl1(3))
-player2 = Player(GeneticMinMax(3))
+player1 = Player(MinMaxLvl1(depth=7, show_values=True))
+player2 = Player(MinMaxLvl0(depth=7, show_values=True))
 game = Game(player1, player2)
 
-games = 100
+games = 1
 for _ in range(games):
-    winner = game.full_game(log=False)
+    winner = game.full_game(log=True)
     game.reset()
     game.switch_players()
 
