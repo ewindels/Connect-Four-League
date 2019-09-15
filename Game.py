@@ -6,8 +6,6 @@ class Game:
         self.board = Board()
         self.players = [player1, player2]
         self.turn = 0
-        self.winner = None
-        self.loser = None
         self.draw = False
 
     @property
@@ -35,31 +33,30 @@ class Game:
 
     def full_game(self, log=False):
 
-        while not (self.winner is not None or self.draw):
+        while True:
             if log:
                 self.print_turn()
                 self.print_board()
             self.play_turn()
             if self.turn >= 6 and self.board.check_victory:
-                self.loser = self.player_turn
+                loser = self.player_turn
+                loser.defeats += 1
                 self.turn -= 1
-                self.winner = self.player_turn
-                self.winner.victories += 1
-                self.loser.defeats += 1
+                winner = self.player_turn
+                winner.victories += 1
                 if log:
                     self.print_board()
                     print('Player {} won !'.format(self.turn % 2))
+                break
             if self.board.is_full:
                 self.draw = True
                 self.players[0].draws += 1
                 self.players[1].draws += 1
                 if log:
                     print('Draw')
-        return self.winner
+                break
 
     def reset(self):
         self.board = Board()
         self.turn = 0
-        self.winner = None
-        self.loser = None
         self.draw = False

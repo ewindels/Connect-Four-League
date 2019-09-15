@@ -35,7 +35,7 @@ class GeneticMinMax(MinMaxStrategy):
 
 
 class Population:
-    def __init__(self, pop_size=30, depth=3):
+    def __init__(self, pop_size=20, depth=4):
         self.population = [Player(strategy=GeneticMinMax(depth)) for _ in range(pop_size)]
         neutral_player = Player(GeneticMinMax(depth))
         neutral_player.strategy.neutral()
@@ -91,7 +91,7 @@ class Population:
 
 '''
 pop = Population()
-for i in range(3):
+for i in range(5):
     print('\nGeneration', i)
     pop.match()
     pop.evolve()
