@@ -67,9 +67,8 @@ class Population:
         print(self.best_players[-1].strategy.values)
 
     def evolve(self):
-        print(sorted([player.score for player in self.population]))
         new_population = [deepcopy(pl) for pl in choices(self.population,
-                                                         weights=[player.score**2 for player in self.population],
+                                                         weights=np.exp([player.score for player in self.population]),
                                                          k=len(self.population))]
         new_population_cross = [deepcopy(pl) for pl in new_population]
         for player in new_population:
@@ -91,19 +90,20 @@ class Population:
         self.best_players[-2].reset_score()
 
 
-if True:
-    pop = Population()
-    for i in range(5):
-        print('\nGeneration', i)
-        pop.match()
-        pop.evolve()
-        pop.best_vs_previous()
+pop = Population()
+for i in range(5):
+    print('\nGeneration', i)
+    pop.match()
+    pop.evolve()
+    pop.best_vs_previous()
 
-    game = Game(pop.best_players[-2], pop.best_players[-1])
-    for _ in range(3):
-        game.full_game(log=True)
-        game.reset()
-        game.switch_players()
+pop.best_players[-2].strategy.show_values = True
+pop.best_players[-1].strategy.show_values = True
+game = Game(pop.best_players[-2], pop.best_players[-1])
+for _ in range(2):
+    game.full_game(log=True)
+    game.reset()
+    game.switch_players()
 
 
 

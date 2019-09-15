@@ -3,6 +3,7 @@ from Player import Player
 from Strategies import *
 from GeneticMinMax import *
 
+
 player1 = Player(MinMaxLvl1(3))
 player2 = Player(GeneticMinMax(3))
 game = Game(player1, player2)

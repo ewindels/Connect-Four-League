@@ -35,7 +35,7 @@ class Board:
             total += 1
             i += 1
         i = 1
-        while last_col + i < 6 and self.grid[last_row][last_col + i] == color:
+        while last_col + i < 7 and self.grid[last_row][last_col + i] == color:
             total += 1
             i += 1
         if total >= 4:
@@ -59,7 +59,7 @@ class Board:
             total += 1
             i += 1
         i = 1
-        while last_row + i < 6 and last_col + i < 6 and self.grid[last_row + i][last_col + i] == color:
+        while last_row + i < 6 and last_col + i < 7 and self.grid[last_row + i][last_col + i] == color:
             total += 1
             i += 1
         if total >= 4:
@@ -67,7 +67,7 @@ class Board:
         # diagonal 2
         total = 1
         i = 1
-        while last_row - i >= 0 and last_col + i < 6 and self.grid[last_row - i][last_col + i] == color:
+        while last_row - i >= 0 and last_col + i < 7 and self.grid[last_row - i][last_col + i] == color:
             total += 1
             i += 1
         i = 1

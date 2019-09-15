@@ -71,8 +71,9 @@ class MinMaxTree:
 
 
 class MinMaxStrategy:
-    def __init__(self, depth):
+    def __init__(self, depth, show_values=False):
         self.depth = depth
+        self.show_values = show_values
 
     def evaluate(self, game, depth):
         return 0
@@ -88,7 +89,7 @@ class MinMaxStrategy:
             for col, child in enumerate(node.children):
                 if child:
                     game_tmp.board.update(col)
-                    if game_tmp.turn >= 7 and game_tmp.board.check_victory:
+                    if game_tmp.turn >= 6 and game_tmp.board.check_victory:
                         child.value = maxsize
                         value = maxsize
                     elif game_tmp.board.is_full:
@@ -105,7 +106,7 @@ class MinMaxStrategy:
             for col, child in enumerate(node.children):
                 if child:
                     game_tmp.board.update(col)
-                    if game_tmp.turn >= 7 and game_tmp.board.check_victory:
+                    if game_tmp.turn >= 6 and game_tmp.board.check_victory:
                         value = -maxsize
                         child.value = -maxsize
                     elif game_tmp.board.is_full:
@@ -121,6 +122,8 @@ class MinMaxStrategy:
         min_max_tree = MinMaxTree()
         self.minimax(game, min_max_tree.origin, 0)
         values = [node.value if node is not None else None for node in min_max_tree.origin.children]
+        if self.show_values:
+            print(values)
         max_val = max([node.value for node in min_max_tree.origin.children if node])
         return choice([col for col, val in enumerate(values) if val == max_val])
 

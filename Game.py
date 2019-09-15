@@ -40,7 +40,7 @@ class Game:
                 self.print_turn()
                 self.print_board()
             self.play_turn()
-            if self.turn >= 7 and self.board.check_victory:
+            if self.turn >= 6 and self.board.check_victory:
                 self.loser = self.player_turn
                 self.turn -= 1
                 self.winner = self.player_turn
