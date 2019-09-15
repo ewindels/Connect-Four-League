@@ -134,16 +134,14 @@ class MinMaxLvl1(MinMaxStrategy):
     def __init__(self, depth):
         super().__init__(depth)
         self.column_value = {col: 2 ** (3 - abs(int(3 - col))) for col in range(7)}
-        self.row_value = {col: 2 ** (3 - abs(int(2.5 - col))) for col in range(6)}
+        self.row_value = {row: 2 ** (2 - abs(int(2.5 - row))) for row in range(6)}
 
     def evaluate(self, game, depth):
         value = 0
-        history = game.board.move_history[-depth:2]
+        history = game.board.move_history[-depth::2]
         offset = [1 for _ in range(7)]
-
         while history:
             col = history.pop()
-            if depth % 2 == 1:
-                value += self.column_value[col] * self.row_value[game.board.heights[col] + offset[col]]
+            value += self.column_value[col] * self.row_value[game.board.heights[col] + offset[col]]
             offset[col] += 1
         return value

@@ -2,11 +2,11 @@ from Game import Game
 from Player import Player
 from Strategies import *
 
-player1 = Player(MinMaxLvl1(2))
-player2 = Player(MinMaxLvl0(2))
+player1 = Player(MinMaxLvl1(3))
+player2 = Player(MinMaxLvl0(3))
 game = Game(player1, player2)
 
-games = 50
+games = 100
 for _ in range(games):
     winner = game.full_game(log=False)
     game.reset()
