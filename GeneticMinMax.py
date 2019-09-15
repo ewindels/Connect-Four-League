@@ -35,7 +35,7 @@ class GeneticMinMax(MinMaxStrategy):
 
 
 class Population:
-    def __init__(self, pop_size=20, depth=3):
+    def __init__(self, pop_size=30, depth=3):
         self.population = [Player(strategy=GeneticMinMax(depth)) for _ in range(pop_size)]
         neutral_player = Player(GeneticMinMax(depth))
         neutral_player.strategy.neutral()
@@ -68,7 +68,7 @@ class Population:
 
     def evolve(self):
         new_population = [deepcopy(pl) for pl in choices(self.population,
-                                                         weights=np.exp([player.score for player in self.population]),
+                                                         weights=[player.score ** 2 for player in self.population],
                                                          k=len(self.population))]
         new_population_cross = [deepcopy(pl) for pl in new_population]
         for player in new_population:

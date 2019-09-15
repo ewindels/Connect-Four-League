@@ -90,8 +90,8 @@ class MinMaxStrategy:
                 if child:
                     game_tmp.board.update(col)
                     if game_tmp.turn >= 6 and game_tmp.board.check_victory:
-                        child.value = maxsize
-                        value = maxsize
+                        child.value = maxsize + depth
+                        value = maxsize + depth
                     elif game_tmp.board.is_full:
                         value = max(0, value)
                         child.value = 0
@@ -107,8 +107,8 @@ class MinMaxStrategy:
                 if child:
                     game_tmp.board.update(col)
                     if game_tmp.turn >= 6 and game_tmp.board.check_victory:
-                        value = -maxsize
-                        child.value = -maxsize
+                        value = -maxsize - depth
+                        child.value = -maxsize - depth
                     elif game_tmp.board.is_full:
                         value = min(0, value)
                         child.value = 0
@@ -123,7 +123,7 @@ class MinMaxStrategy:
         self.minimax(game, min_max_tree.origin, 0)
         values = [node.value if node is not None else None for node in min_max_tree.origin.children]
         if self.show_values:
-            print(values)
+            print('|' + '|'.join([str(int(val)).center(3) if val else 'X'.center(3) for val in values]) + '|')
         max_val = max([node.value for node in min_max_tree.origin.children if node])
         return choice([col for col, val in enumerate(values) if val == max_val])
 
