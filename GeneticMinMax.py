@@ -3,7 +3,6 @@ from Player import Player
 from Game import Game
 import numpy as np
 from random import choice, choices
-from tqdm import tqdm
 from copy import deepcopy
 
 
@@ -11,16 +10,16 @@ class GeneticMinMax(MinMaxStrategy):
     def __init__(self, depth):
         super().__init__(depth)
         self.values = np.random.randint(10, size=(6, 7))
-        self.mutation_rate = 0.1
+        self.mutation_rate = 2.5
 
     def neutral(self):
         self.values = np.zeros((6, 7))
 
     def crossover(self, genetic_min_max):
-        self.values = np.mean([self.values, genetic_min_max.values], axis=0)
+        self.values = np.mean([self.values, genetic_min_max.values], axis=0).round()
 
     def mutate(self):
-        self.values += 2 * (np.random.random(size=(6, 7)) - 0.5) * self.mutation_rate
+        self.values += ((np.random.random(size=(6, 7)) - 0.5) * self.mutation_rate).astype(int)
 
     def evaluate(self, game, depth):
         value = 0
@@ -36,61 +35,75 @@ class GeneticMinMax(MinMaxStrategy):
 
 
 class Population:
-    def __init__(self, pop_size=50):
-        self.population = [Player(strategy=GeneticMinMax(1)) for _ in range(pop_size)]
-        self.best_player = None
+    def __init__(self, pop_size=20, depth=3):
+        self.population = [Player(strategy=GeneticMinMax(depth)) for _ in range(pop_size)]
+        neutral_player = Player(GeneticMinMax(depth))
+        neutral_player.strategy.neutral()
+        self.best_players = [neutral_player]
+        self.depth = depth
 
-    def match(self, n=50):
+    def match(self):
         for player1 in self.population:
-            for i in range(n):
-                player2 = choice(self.population)
+            for player2 in self.population:
                 game = Game(player1, player2)
-                if i % 2 == 0:
-                    game.switch_players()
                 game.full_game()
 
-        self.best_player = deepcopy(max(self.population, key=lambda p: p.score))
-        self.best_player.reset_score()
+        self.best_players.append(deepcopy(max(self.population, key=lambda p: p.score)))
+        self.best_players[-1].reset_score()
         print('\n\nMean :')
         self.print_mean()
+        print('\n\nStd :')
+        self.print_std()
         print('Best :')
         self.print_best()
 
     def print_mean(self):
         print(np.mean([player.strategy.values for player in self.population], axis=0).round(1))
 
+    def print_std(self):
+        print(np.std([player.strategy.values for player in self.population], axis=0).round(1))
+
     def print_best(self):
-        print(self.best_player.strategy.values.round(1))
+        print(self.best_players[-1].strategy.values)
 
     def evolve(self):
-        new_population = choices(self.population,
-                                 weights=[player.score for player in self.population],
-                                 k=len(self.population))
+        print(sorted([player.score for player in self.population]))
+        new_population = [deepcopy(pl) for pl in choices(self.population,
+                                                         weights=[player.score**2 for player in self.population],
+                                                         k=len(self.population))]
+        new_population_cross = [deepcopy(pl) for pl in new_population]
         for player in new_population:
-            player.strategy.crossover(choice(new_population).strategy)
-            player.strategy.mutate()
+            player.strategy.crossover(choice(new_population_cross).strategy)
             player.reset_score()
-        self.population = new_population[:-1] + [self.best_player]
+            player.strategy.mutate()
+        del new_population_cross
+        self.population = new_population[:-1] + [self.best_players[-1]]
 
-    def best_vs_neutral(self):
-        neutral_strategy = GeneticMinMax(1)
-        neutral_strategy.neutral()
-        neutral_player = Player(neutral_strategy)
-
-        game = Game(neutral_player, self.best_player)
-        for _ in range(100):
+    def best_vs_previous(self):
+        game = Game(self.best_players[-2], self.best_players[-1])
+        for _ in range(50):
             game.full_game()
             game.reset()
             game.switch_players()
-        print('\nBest player vs Neutral :')
-        self.best_player.print_score()
-        self.best_player.reset_score()
+        print('\nBest player vs Previous best :')
+        self.best_players[-1].print_score()
+        self.best_players[-1].reset_score()
+        self.best_players[-2].reset_score()
 
 
-pop = Population()
-for i in range(20):
-    print('\nGeneration', i)
-    pop.match()
-    pop.evolve()
-    pop.best_vs_neutral()
+if True:
+    pop = Population()
+    for i in range(5):
+        print('\nGeneration', i)
+        pop.match()
+        pop.evolve()
+        pop.best_vs_previous()
+
+    game = Game(pop.best_players[-2], pop.best_players[-1])
+    for _ in range(3):
+        game.full_game(log=True)
+        game.reset()
+        game.switch_players()
+
+
 
